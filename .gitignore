@@ -19,3 +19,17 @@
 
 # Go workspace file
 go.work
+go.work.sum
+
+# gitignore all files that are not .gitkeep
+
+output/*
+!output/.gitkeep
+input/*
+!input/.gitkeep
+attention/*
+!attention/.gitkeep
+temp/*
+!temp/.gitkeep
+run.ps1
+sfw
