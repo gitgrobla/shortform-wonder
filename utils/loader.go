@@ -71,13 +71,55 @@ func CreateIfNotExist(dir string) {
 	}
 }
 
+func ExportTempVideo(video *ffmpeg_go.Stream, v bool, s float64, d float64) {
+	CreateIfNotExist("temp")
+
+	var output string
+	if v {
+		output = "mv.mp4"
+	} else {
+		output = "av.mp4"
+	}
+
+	if v {
+		fmt.Println("Exporting video...")
+		err := ffmpeg_go.Output([]*ffmpeg_go.Stream{video}, "temp\\"+output, ffmpeg_go.KwArgs{
+			"map": "0",
+			"ss":  s,
+			"t":   d,
+			"c:v": "copy",
+			"c:a": "aac",
+		}).OverWriteOutput().Run()
+
+		if err != nil {
+			Cleanup()
+			panic(err)
+		}
+
+	} else {
+		fmt.Println("Exporting attention video...")
+		err := ffmpeg_go.Output([]*ffmpeg_go.Stream{video}, "temp\\"+output, ffmpeg_go.KwArgs{
+			"map": "0:v",
+			"ss":  s,
+			"t":   d,
+			"c:v": "copy",
+		}).OverWriteOutput().Run()
+
+		if err != nil {
+			Cleanup()
+			panic(err)
+		}
+	}
+
+}
+
 func ExportVideo(video *ffmpeg_go.Stream, output string, s float64, d float64) {
 
 	CreateIfNotExist("temp")
 	err0 := ffmpeg_go.Output([]*ffmpeg_go.Stream{video}, "temp\\audio.mp3", ffmpeg_go.KwArgs{
 		"map": "0:a",
-		"ss":  s,
-		"t":   d,
+		// "ss":  s,
+		// "t":   d,
 	}).OverWriteOutput().Run()
 
 	if err0 != nil {
@@ -94,10 +136,10 @@ func ExportVideo(video *ffmpeg_go.Stream, output string, s float64, d float64) {
 	}
 
 	o := ffmpeg_go.Output([]*ffmpeg_go.Stream{_vs}, output, ffmpeg_go.KwArgs{
-		"map":    "0",
-		"ss":     s,
-		"t":      d,
-		"c:v":    "h264",
+		"map": "0",
+		// "ss":     s,
+		// "t":      d,
+		"c:v":    "libx264",
 		"c:a":    "aac",
 		"strict": "experimental",
 	})
@@ -136,6 +178,8 @@ func FilterFiles(files []os.DirEntry) []os.DirEntry {
 func Cleanup() {
 	os.Remove("temp\\audio.mp3")
 	os.Remove("temp\\audio.srt")
+	os.Remove("temp\\mv.mp4")
+	os.Remove("temp\\av.mp4")
 }
 
 func FileExists(file string) bool {

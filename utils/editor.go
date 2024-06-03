@@ -15,7 +15,11 @@ func SliceAudio(audio *ffmpeg_go.Stream, start float64, end float64) *ffmpeg_go.
 	return audio.Filter("atrim", ffmpeg_go.Args{}, ffmpeg_go.KwArgs{"start": start, "end": end}).Filter("asetpts", ffmpeg_go.Args{"PTS-STARTPTS"})
 }
 
-func MergeVideos(v0 *ffmpeg_go.Stream, v2 *ffmpeg_go.Stream, height int, width int) *ffmpeg_go.Stream {
+func MergeVideos(height int, width int) *ffmpeg_go.Stream {
+
+	v0 := ffmpeg_go.Input("temp\\mv.mp4")
+	v2 := ffmpeg_go.Input("temp\\av.mp4")
+
 	scaledHeight := height / 2
 	widthStr := strconv.Itoa(width)
 	heightStr := strconv.Itoa(scaledHeight)
