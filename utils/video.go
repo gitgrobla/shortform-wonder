@@ -35,23 +35,22 @@ func HandleVideo(source *string, start float64, end float64, height int, width i
 		panic(ae)
 	}
 
-	if start > d || start > ad {
+	if start > d {
 		panic("start time is greater than the duration of the video")
 	}
 
-	if end > d || end > ad {
+	if end > d {
 		panic("end time is greater than the duration of the video")
 	}
 
-	t := SliceVideo(v, start, end)
 	dd := end - start
-
 	rs, re := RandomTimestamp(ad, dd)
-	at := SliceVideo(av, rs, re)
-	fmt.Println("additional video start: ", rs)
-	fmt.Println("additional video end: ", re)
+	aad := re - rs
 
-	mv := MergeVideos(t, at, height, width)
+	ExportTempVideo(v, true, start, dd)
+	ExportTempVideo(av, false, rs, aad)
+
+	mv := MergeVideos(height, width)
 
 	o := TimestampFileName()
 	fmt.Println("output file: ", o)
